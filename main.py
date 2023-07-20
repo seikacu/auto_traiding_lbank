@@ -49,10 +49,12 @@ driver = webdriver.Chrome(service=service, options=options)
 
 # class всплывающего диалогового окна
 class_name = "ant-modal-content"
-stop_threads = False
+dialog_semaphore = threading.Semaphore(value=0)
+
+# stop_threads = False
 
 try:
-                
+                    
     # Функция для проверки наличия класса 'new_class'
     def check_dialog_class(driver:webdriver.Chrome):
         try:
@@ -60,21 +62,24 @@ try:
             # Действия после появления класса class_name
             click_dont_prompt_again(driver)
             # нажать кннопку подтверить
-            # click_trade_confirm_button(driver, "Confirm")
+            click_trade_confirm_button(driver, "Confirm")
             # нажать кннопку отмена
             # click_trade_confirm_button(driver, "Cancel")
             close_dialog_window(driver, element)
             click_i_see(driver, element)
         except:
             pass
-        
+        finally:
+            # Release the semaphore to allow waiting threads to continue
+            dialog_semaphore.release()      
+              
     # Функция для выполнения проверки в отдельном потоке
     def check_dialog_thread(stop, driver:webdriver.Chrome):
         while True:
             check_dialog_class(driver)
             if stop():
-                break    
-    
+                break
+
     # Passing authentication...
     def authentication(driver:webdriver.Chrome):
         try:
@@ -190,17 +195,33 @@ try:
         driver.get(url)
         
     if mode == 3:
-        click_order(driver, "Market")
-        turn_trade_slider(driver, "tradeSliderGreen")
-        set_amount(driver, "Enter buying amount", "0.10")        
-        click_trade_button(driver, "index_buy")
+        def thread_by(driver:webdriver.Chrome):
+            dialog_semaphore.acquire()
+            click_order(driver, "Market")
+            dialog_semaphore.acquire()
+            turn_trade_slider(driver, "tradeSliderGreen")
+            dialog_semaphore.acquire()
+            set_amount(driver, "Enter buying amount", "0.10")        
+            dialog_semaphore.acquire()
+            click_trade_button(driver, "index_buy")
+        threadBy = threading.Thread(target=thread_by, args=(driver, ))
+        threadBy.start()
+        threadBy.join()
 
     if mode == 4:
-        click_order(driver, "Market")
-        turn_trade_slider(driver, "tradeSliderRed")
-        set_amount(driver, "Enter selling amount", "0.01")
-        click_trade_button(driver, "index_sel")
-
+        def thread_sell(driver:webdriver.Chrome):
+            dialog_semaphore.acquire()
+            click_order(driver, "Market")
+            dialog_semaphore.acquire()
+            turn_trade_slider(driver, "tradeSliderRed")
+            dialog_semaphore.acquire()
+            set_amount(driver, "Enter selling amount", "0.01")
+            dialog_semaphore.acquire()
+            click_trade_button(driver, "index_sel")
+        threadSell = threading.Thread(target=thread_sell, args=(driver, ))
+        threadSell.start()
+        threadSell.join()
+        
 except Exception as ex:
     print(ex)
 finally:
