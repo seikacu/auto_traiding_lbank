@@ -192,13 +192,13 @@ try:
     if mode == 3:
         click_order(driver, "Market")
         turn_trade_slider(driver, "tradeSliderGreen")
-        # set_amount(driver, "Enter buying amount", "0.10")        
+        set_amount(driver, "Enter buying amount", "0.10")        
         click_trade_button(driver, "index_buy")
 
     if mode == 4:
         click_order(driver, "Market")
         turn_trade_slider(driver, "tradeSliderRed")
-        # set_amount(driver, "Enter selling amount", "0.01")
+        set_amount(driver, "Enter selling amount", "0.01")
         click_trade_button(driver, "index_sel")
 
 except Exception as ex:
