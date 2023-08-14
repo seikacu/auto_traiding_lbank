@@ -11,19 +11,24 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from auth_data import bank_password, bank_emale
 
-print("Режимы работы:")
-print("0 - Открыть браузер Chrome")
-print("1 - Открыть lbank и авторизоваться на сайте")
-print("2 - Ввести ссылку")
-print("3 - Осуществить покупку")
-print("4 - Оcуществить продажу")
 
-mode = int(input("Введите номер режима: "))
-
-if mode == 0:
-    os.startfile (r"C:\WebDriver\chromedriver\Chrome.lnk")
+def open_browser():
+    os.startfile(r"C:\WebDriver\chromedriver\Chrome.lnk")
     sys.exit()
     os._exit(0)
+
+def mode_list():
+    print("Режимы работы:")
+    print("0 - Открыть браузер Chrome")
+    print("1 - Открыть lbank и авторизоваться на сайте")
+    print("2 - Ввести ссылку")
+    print("3 - Осуществить покупку")
+    print("4 - Оcуществить продажу")
+
+    mode = int(input("Введите номер режима: "))
+
+    if mode == 0:
+        open_browser()
     
 options = webdriver.ChromeOptions()
 
@@ -52,7 +57,6 @@ class_name = "ant-modal-content"
 dialog_semaphore = threading.Semaphore(value=0)
 
 # stop_threads = False
-
 try:
                     
     # Функция для проверки наличия класса 'new_class'
@@ -181,8 +185,9 @@ try:
     driver.maximize_window
     
     stop_threads = False
-    # Создание и запуск потока для выполнения проверки на всплывающее диалоговое окно
-    thread = threading.Thread(target=check_dialog_thread, args=(lambda : stop_threads, driver, ))
+    # Создание и запуск потока для выполнения проверки на всплывающее
+    # диалоговое окно
+    thread = threading.Thread(target=check_dialog_thread, args=(lambda : stop_threads, driver,))
     thread.start()
 
     if mode == 1:
@@ -201,10 +206,10 @@ try:
             dialog_semaphore.acquire()
             turn_trade_slider(driver, "tradeSliderGreen")
             # dialog_semaphore.acquire()
-            # set_amount(driver, "Enter buying amount", "0.10")        
+            # set_amount(driver, "Enter buying amount", "0.10")
             dialog_semaphore.acquire()
             click_trade_button(driver, "index_buy")
-        threadBy = threading.Thread(target=thread_by, args=(driver, ))
+        threadBy = threading.Thread(target=thread_by, args=(driver,))
         threadBy.start()
         threadBy.join()
 
@@ -218,7 +223,7 @@ try:
             # set_amount(driver, "Enter selling amount", "0.01")
             dialog_semaphore.acquire()
             click_trade_button(driver, "index_sel")
-        threadSell = threading.Thread(target=thread_sell, args=(driver, ))
+        threadSell = threading.Thread(target=thread_sell, args=(driver,))
         threadSell.start()
         threadSell.join()
         
@@ -227,3 +232,14 @@ except Exception as ex:
 finally:
     stop_threads = True
     thread.join()
+
+def main():
+    
+    print("start")
+    mode_list()
+    print("end")
+
+    
+if __name__ == '__main__':
+    main()
+    
