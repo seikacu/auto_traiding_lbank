@@ -30,8 +30,8 @@ def thread_by(driver:webdriver.Chrome, dialog_semaphore):
     click_order(driver, "Market")
     dialog_semaphore.acquire()
     turn_trade_slider(driver, "tradeSliderGreen")
-    dialog_semaphore.acquire()
-    set_amount(driver, "Enter buying amount", "0.01")
+    #dialog_semaphore.acquire()
+    #set_amount(driver, "Enter buying amount", "0.01")
     dialog_semaphore.acquire()
     click_trade_button(driver, "index_buy")
 
@@ -40,8 +40,8 @@ def thread_sell(driver:webdriver.Chrome, dialog_semaphore):
     click_order(driver, "Market")
     dialog_semaphore.acquire()
     turn_trade_slider(driver, "tradeSliderRed")
-    dialog_semaphore.acquire()
-    set_amount(driver, "Enter selling amount", "0.01")
+    #dialog_semaphore.acquire()
+    #set_amount(driver, "Enter selling amount", "0.01")
     dialog_semaphore.acquire()
     click_trade_button(driver, "index_sel")
 
@@ -158,12 +158,8 @@ def click_order(driver:webdriver.Chrome, arg:str):
 def set_amount(driver:webdriver.Chrome, arg:str, val:str):
     try:
         input = driver.find_element(By.XPATH, f"//input[@placeholder='{arg}']")
-        input.send_keys(Keys.BACKSPACE)
-        input.send_keys(Keys.BACKSPACE)
-        input.send_keys(Keys.BACKSPACE)
-        input.send_keys(Keys.BACKSPACE)
-        input.send_keys(Keys.BACKSPACE)
-        input.send_keys(Keys.BACKSPACE)
+        for i in range(6):
+            input.send_keys(Keys.BACKSPACE)
         input.send_keys(val)
     except NoSuchElementException:
         print(f"Поле для ввода {arg} не найдено")
